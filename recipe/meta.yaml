@@ -1,5 +1,5 @@
 {% set name = "pyrfr" %}
-{% set version = "0.8.1" %}
+{% set version = "0.8.2" %}
 
 
 package:
@@ -8,10 +8,10 @@ package:
 
 source:
   url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 003d38810b3aeee4f782619afd9e039fe29a44f934788a0503749f753c6305a4
+  sha256: c18a6e8f0bd971c1ea449b6dd0997a6ec1fe9a031883400bdcc95fa5ddd65975
 
 build:
-  number: 2
+  number: 0
   script: {{ PYTHON }} -m pip install . -vv
 
 requirements:
