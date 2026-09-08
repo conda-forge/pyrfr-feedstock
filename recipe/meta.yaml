@@ -9,6 +9,13 @@ package:
 source:
   url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: bc6e758317cf79579fe6b7ce5f01dd42f77c991bf707e33646e8c6a9112c186b
+  patches:
+    # The vendored cereal 1.2.2 / rapidjson copy defines a copy-assignment
+    # operator on GenericStringRef that assigns to its own const members.
+    # GCC 15 (-Wtemplate-body) and recent clang diagnose this even though the
+    # body is never instantiated, breaking the build on linux and osx.
+    # Fix taken from upstream rapidjson.
+    - patches/0001-rapidjson-remove-invalid-copy-assignment.patch
 
 build:
   number: 3
