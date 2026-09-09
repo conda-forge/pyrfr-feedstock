@@ -26,7 +26,6 @@ requirements:
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
     - {{ compiler('cxx') }}
     - {{ stdlib("c") }}
-    - doxygen
     - swig >3.0.3
   host:
     # cereal <1.3.0 ships a rapidjson copy whose GenericStringRef assigns to its
