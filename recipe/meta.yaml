@@ -9,17 +9,16 @@ package:
 source:
   url: https://files.pythonhosted.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: bc6e758317cf79579fe6b7ce5f01dd42f77c991bf707e33646e8c6a9112c186b
-  patches:
-    # The vendored cereal 1.2.2 / rapidjson copy defines a copy-assignment
-    # operator on GenericStringRef that assigns to its own const members.
-    # GCC 15 (-Wtemplate-body) and recent clang diagnose this even though the
-    # body is never instantiated, breaking the build on linux and osx.
-    # Fix taken from upstream rapidjson.
-    - patches/0001-rapidjson-remove-invalid-copy-assignment.patch
 
 build:
-  number: 3
-  script: {{ PYTHON }} -m pip install . -vv
+  number: 5
+  script:
+    # Drop the vendored cereal 1.2.2 tree and build against conda-forge's cereal
+    # instead. ./include is first on the include path, so the vendored copy would
+    # otherwise shadow $PREFIX/include/cereal.
+    - rm -rf include/cereal                                    # [unix]
+    - if exist include\cereal rmdir /s /q include\cereal       # [win]
+    - {{ PYTHON }} -m pip install . -vv
 
 requirements:
   build:
@@ -27,9 +26,11 @@ requirements:
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
     - {{ compiler('cxx') }}
     - {{ stdlib("c") }}
-    - doxygen
     - swig >3.0.3
   host:
+    # cereal <1.3.0 ships a rapidjson copy whose GenericStringRef assigns to its
+    # own const members; GCC 15 (-Wtemplate-body) and recent clang reject it.
+    - cereal >=1.3.0
     - pip
     - python
     - setuptools
@@ -49,7 +50,6 @@ about:
   home: https://pypi.org/project/pyrfr/
   license: BSD-2-Clause AND BSD-3-Clause AND BSL-1.0 AND JSON AND MIT
   license_file:
-    - include/cereal/external/rapidxml/license.txt
     - LICENSE_cereal-1.2.2
     - LICENSE_doxy2swig
     - LICENSE.txt
